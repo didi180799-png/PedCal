@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// --- VERSÃO 2.0 STABLE (SCROLL TO TOP RESET) ---
+// --- VERSÃO 2.2 STITCH LOVE MODE ---
 // Autor: Dr. Diego Melo | Design: Premium Safety View
 
 // 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
@@ -50,6 +50,11 @@ export default function App() {
   // Estado para controle da animação de scroll
   const [isCompact, setIsCompact] = useState(false);
 
+  // --- CONFIGURAÇÃO DA IMAGEM DO STITCH ---
+  // Substitua a URL abaixo pela imagem que você enviou se estiver hospedada online, 
+  // ou importe-a se estiver rodando localmente (ex: import stitchImg from './stitch.png')
+  const stitchImageUrl = "https://upload.wikimedia.org/wikipedia/en/d/d2/Stitch_%28Lilo_%26_Stitch%29.svg";
+
   // Efeito de Scroll Otimizado (RAF + Hysteresis)
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -81,8 +86,6 @@ export default function App() {
       } else if (direction === "down" && scrollY > 120) {
         setIsCompact(true);
       }
-      // Nota: Removemos o 'else if (direction === "up") setIsCompact(false)' 
-      // para evitar que a barra abra prematuramente ao rolar para cima.
 
       lastScrollY = scrollY;
       ticking = false;
@@ -196,7 +199,7 @@ export default function App() {
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V2.0 STABLE
+            V2.2 STITCH
           </div>
         </div>
       </header>
@@ -266,7 +269,7 @@ export default function App() {
                 className={`
                   transition-all duration-300 flex items-center justify-center
                   ${isCompact
-                    ? 'w-full h-full text-2xl animate-in fade-in zoom-in duration-300' // Ícone grande na bolinha
+                    ? 'w-full h-full animate-in fade-in zoom-in duration-300' // Modo Bolinha: Remove estilos de texto padrão para focar na imagem
                     : `
                       flex-1 gap-2 rounded-xl py-3 text-[10px] sm:text-xs font-extrabold uppercase
                       ${isActive 
@@ -276,9 +279,18 @@ export default function App() {
                   }
                 `}
               >
-                <span className={isCompact ? "" : "text-sm"}>{tab.icon}</span>
-                {!isCompact && (
+                {/* LÓGICA DE EXIBIÇÃO: IMAGEM STITCH vs ÍCONES PADRÃO */}
+                {isCompact ? (
+                  <div className="w-10 h-10 relative flex items-center justify-center transition-transform hover:scale-110">
+                    <img 
+                      src={stitchImageUrl} 
+                      alt="Stitch" 
+                      className="w-full h-full object-contain drop-shadow-sm filter saturate-110"
+                    />
+                  </div>
+                ) : (
                   <>
+                    <span className="text-sm">{tab.icon}</span>
                     <span className="hidden sm:inline">{tab.label}</span>
                     <span className="sm:hidden">{tab.label.substring(0, 3)}</span>
                   </>
@@ -309,7 +321,7 @@ export default function App() {
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v2.0 • Safety First</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v2.2 • Safety First</p>
       </footer>
     </div>
   );
