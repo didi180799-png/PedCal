@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-// --- VERSÃO 1.5 STANDALONE (SEGURANÇA CLÍNICA MAXIMIZADA) ---
+// --- VERSÃO 1.6 STANDALONE (SEGURANÇA CLÍNICA MAXIMIZADA + BUSCOPAN) ---
 // Autor: Dr. Diego Melo | Design: Premium Safety View
 
 // 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
@@ -73,6 +73,12 @@ export default function App() {
   // Cálculo base: Peso * 0.06 mL/kg
   const diazepamVol = Math.min(calcWeight * 0.06, 2.00).toFixed(2);
 
+  // 6. Buscopan (Oral): 2 gts/kg | Teto: 20 gotas
+  const buscopanOralDrops = Math.min(Math.round(calcWeight * 2), 20);
+
+  // 7. Buscopan (EV): 0.4mg/kg | Teto: 1 Ampola (1mL)
+  const buscopanInjVol = Math.min(Number((calcWeight * 0.02).toFixed(2)), 1).toFixed(2);
+
 
   // --- ARRAYS DE MEDICAMENTOS ---
   const orals = [
@@ -80,7 +86,8 @@ export default function App() {
     { label: "Paracetamol (Gts 200mg/mL)", dose: `${(calcWeight * 10).toFixed(1)}mg`, practicalResult: `${paracetamolDrops} Gotas`, color: 'emerald', notes: "Teto máx: 55 gotas" },
     { label: "Amoxicilina (250mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 50 / 3).toFixed(1)} mL (8/8h)`, color: 'emerald' },
     { label: "Amoxicilina (400mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 80 / 2).toFixed(1)} mL (12/12h)`, color: 'emerald' },
-    { label: "Prednisolona (3mg/mL)", dose: `${(calcWeight * 1).toFixed(1)}mg`, practicalResult: `${(calcWeight / 3).toFixed(1)} mL`, color: 'emerald' }
+    { label: "Prednisolona (3mg/mL)", dose: `${(calcWeight * 1).toFixed(1)}mg`, practicalResult: `${(calcWeight / 3).toFixed(1)} mL`, color: 'emerald' },
+    { label: "Buscopan Simples (Gts 10mg/mL)", dose: `${(calcWeight * 0.5).toFixed(1)} mg`, practicalResult: `${buscopanOralDrops} Gotas`, color: 'emerald', notes: "Dose: 0,3-0,5mg/kg. Máximo 20 gts." }
   ];
 
   const injectables = [
@@ -89,7 +96,8 @@ export default function App() {
     { label: "3. DIPIRONA (EV/IM) - (500mg/mL)", dose: `${(calcWeight * 25).toFixed(1)} mg`, volume: `${(calcWeight * 0.05).toFixed(2)} mL`, color: 'blue' },
     { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${dexametasonaVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2.5mL)" },
     { label: "5. DIAZEPAM (EV) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${diazepamVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2mL)" },
-    { label: "6. DRAMIN B6 DL (IM)", dose: "Dose Padrão", volume: `${(calcWeight * 0.03).toFixed(2)} mL`, color: 'blue', notes: "Volumétrico conforme protocolo." }
+    { label: "6. DRAMIN B6 DL (IM)", dose: "Dose Padrão", volume: `${(calcWeight * 0.03).toFixed(2)} mL`, color: 'blue', notes: "Volumétrico conforme protocolo." },
+    { label: "Buscopan Simples (EV/IM) (20mg/mL)", dose: `${(calcWeight * 0.4).toFixed(1)} mg`, volume: `${buscopanInjVol} mL`, color: 'blue', notes: "Dose: 0,4mg/kg. Teto: 1 ampola." }
   ];
 
   const intubation = [
@@ -129,7 +137,7 @@ export default function App() {
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V1.5 SAFETY
+            V1.6 SAFETY
           </div>
         </div>
       </header>
@@ -209,7 +217,7 @@ export default function App() {
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.5 • Safety First</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.6 • Safety First</p>
       </footer>
     </div>
   );
