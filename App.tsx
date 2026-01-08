@@ -1,42 +1,38 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 
-// --- ARQUIVO ÚNICO (STANDALONE) - DESIGN PREMIUM ---
+// --- VERSÃO 1.3 STANDALONE (ULTRA-ESTÁVEL) ---
+// Autor: Dr. Diego Melo | Design: Premium Safety View
 
-// 1. Definições de Tipos
-enum MedicationCategory {
-  ORAL = 'ORAL',
-  INJECTABLE = 'INJETÁVEL',
-  INTUBATION = 'INTUBAÇÃO'
-}
-
-// 2. Componente do Cartão (MedicationCard)
+// 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
 const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlightColor }: any) => {
-  const colorStyles: any = {
-    emerald: { border: 'border-emerald-500', bg: 'bg-emerald-50/50', text: 'text-emerald-700', badge: 'bg-emerald-100 text-emerald-700' },
-    blue: { border: 'border-blue-500', bg: 'bg-blue-50/50', text: 'text-blue-700', badge: 'bg-blue-100 text-blue-700' },
-    red: { border: 'border-rose-500', bg: 'bg-rose-50/50', text: 'text-rose-700', badge: 'bg-rose-100 text-rose-700' }
+  const colors: any = {
+    emerald: 'border-emerald-500 text-emerald-700 bg-emerald-50',
+    blue: 'border-blue-500 text-blue-700 bg-blue-50',
+    red: 'border-rose-500 text-rose-700 bg-rose-50'
   };
-
-  const style = colorStyles[highlightColor];
+  
+  // Fallback seguro de cor
+  const theme = colors[highlightColor] || colors.emerald;
+  const borderColor = theme.split(' ')[0];
+  const textColor = theme.split(' ')[1];
 
   return (
     <div className={`
-      relative overflow-hidden bg-white border-l-[6px] ${style.border} 
-      rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 
-      active:scale-[0.98] hover:-translate-y-1 group border border-slate-100
+      relative overflow-hidden bg-white border-l-[6px] ${borderColor}
+      rounded-xl p-5 shadow-sm border border-slate-100 mb-3 
+      transition-all duration-200 active:scale-[0.98]
     `}>
-      <div className="flex justify-between items-start mb-3">
+      <div className="flex justify-between items-start mb-2">
         <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</h3>
-        {/* Indicador visual sutil */}
-        <div className={`w-2 h-2 rounded-full ${style.border.replace('border-', 'bg-')} opacity-40 group-hover:opacity-100 transition-opacity`}></div>
+        <div className={`w-2 h-2 rounded-full opacity-20 ${borderColor.replace('border-', 'bg-')}`}></div>
       </div>
       
       <div className="flex flex-col gap-1">
         <div className="text-slate-900 text-lg font-medium leading-tight">
-          Aplicar <strong className={`font-black ${style.text} text-xl`}>{practicalResult || volume}</strong>
+          Aplicar <strong className={`font-black ${textColor} text-xl`}>{practicalResult || volume}</strong>
         </div>
         <div className="flex items-center flex-wrap gap-2 mt-3 pt-3 border-t border-slate-50">
-           <span className={`text-[9px] font-bold px-2 py-1 rounded-md uppercase tracking-wide ${style.badge}`}>
+           <span className={`text-[9px] font-bold px-2 py-1 rounded-md uppercase tracking-wide bg-opacity-50 ${theme.split(' ')[2]} ${textColor}`}>
              Dose: {dose}
            </span>
            {notes && <span className="text-[10px] text-slate-400 italic flex-1 min-w-0 truncate">{notes}</span>}
@@ -46,85 +42,75 @@ const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlight
   );
 };
 
-// 3. Componente Principal (App)
-const App: React.FC = () => {
-  const [weight, setWeight] = useState<number | ''>('');
-  const [activeTab, setActiveTab] = useState<MedicationCategory>(MedicationCategory.ORAL);
+// 2. Componente Principal (App)
+export default function App() {
+  const [weight, setWeight] = useState<string>('');
+  // Usando strings diretas em vez de Enum para evitar problemas de compilação
+  const [activeTab, setActiveTab] = useState('ORAL');
 
-  const isAdultCeiling = typeof weight === 'number' && weight > 50;
-  const calcWeight = typeof weight === 'number' ? weight : 0;
+  // Conversão segura de peso
+  const numWeight = parseFloat(weight);
+  const calcWeight = !isNaN(numWeight) ? numWeight : 0;
+  const isAdultCeiling = calcWeight > 50;
 
-  // --- Lógica de Medicamentos ---
-  const orals = useMemo(() => [
-    { label: "Dipirona (Gts 500mg/mL)", dose: `${(calcWeight * 20).toFixed(1)}mg`, practicalResult: `${((calcWeight * 20) / 25).toFixed(0)} Gotas` },
-    { label: "Paracetamol (Gts 200mg/mL)", dose: `${(calcWeight * 15).toFixed(1)}mg`, practicalResult: `${((calcWeight * 15) / 10).toFixed(0)} Gotas` },
-    { label: "Amoxicilina (250mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 50 / 3).toFixed(1)} mL (8/8h)` },
-    { label: "Amoxicilina (400mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 80 / 2).toFixed(1)} mL (12/12h)` },
-    { label: "Prednisolona (3mg/mL)", dose: `${(calcWeight * 1).toFixed(1)}mg`, practicalResult: `${(calcWeight / 3).toFixed(1)} mL` }
-  ], [calcWeight]);
+  // --- Lógica de Medicamentos (Cálculos) ---
+  const orals = [
+    { label: "Dipirona (Gts 500mg/mL)", dose: `${(calcWeight * 20).toFixed(1)}mg`, practicalResult: `${((calcWeight * 20) / 25).toFixed(0)} Gotas`, color: 'emerald' },
+    { label: "Paracetamol (Gts 200mg/mL)", dose: `${(calcWeight * 15).toFixed(1)}mg`, practicalResult: `${((calcWeight * 15) / 10).toFixed(0)} Gotas`, color: 'emerald' },
+    { label: "Amoxicilina (250mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 50 / 3).toFixed(1)} mL (8/8h)`, color: 'emerald' },
+    { label: "Amoxicilina (400mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 80 / 2).toFixed(1)} mL (12/12h)`, color: 'emerald' },
+    { label: "Prednisolona (3mg/mL)", dose: `${(calcWeight * 1).toFixed(1)}mg`, practicalResult: `${(calcWeight / 3).toFixed(1)} mL`, color: 'emerald' }
+  ];
 
-  const injectables = useMemo(() => [
-    { label: "1. ONDANSETRONA (EV) - (4mg/2mL)", dose: `${(calcWeight * 0.15).toFixed(2)} mg`, volume: `${(calcWeight * 0.075).toFixed(2)} mL` },
-    { label: "2. PLASIL (IM/EV) - (10mg/2mL)", dose: `${(calcWeight * 0.1).toFixed(2)} mg`, volume: `${(calcWeight * 0.02).toFixed(2)} mL` },
-    { label: "3. DIPIRONA (EV/IM) - (500mg/mL)", dose: `${(calcWeight * 25).toFixed(1)} mg`, volume: `${(calcWeight * 0.05).toFixed(2)} mL` },
-    { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${(calcWeight * 0.15).toFixed(2)} mL` },
-    { label: "5. DIAZEPAM (EV) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${(calcWeight * 0.06).toFixed(2)} mL`, notes: "Puro (Sem diluição)." },
-    { label: "6. DRAMIN B6 DL (IM)", dose: "Dose Padrão", volume: `${(calcWeight * 0.03).toFixed(2)} mL`, notes: "Volumétrico conforme protocolo." }
-  ], [calcWeight]);
+  const injectables = [
+    { label: "1. ONDANSETRONA (EV) - (4mg/2mL)", dose: `${(calcWeight * 0.15).toFixed(2)} mg`, volume: `${(calcWeight * 0.075).toFixed(2)} mL`, color: 'blue' },
+    { label: "2. PLASIL (IM/EV) - (10mg/2mL)", dose: `${(calcWeight * 0.1).toFixed(2)} mg`, volume: `${(calcWeight * 0.02).toFixed(2)} mL`, color: 'blue' },
+    { label: "3. DIPIRONA (EV/IM) - (500mg/mL)", dose: `${(calcWeight * 25).toFixed(1)} mg`, volume: `${(calcWeight * 0.05).toFixed(2)} mL`, color: 'blue' },
+    { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${(calcWeight * 0.15).toFixed(2)} mL`, color: 'blue' },
+    { label: "5. DIAZEPAM (EV) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${(calcWeight * 0.06).toFixed(2)} mL`, notes: "Puro (Sem diluição).", color: 'blue' },
+    { label: "6. DRAMIN B6 DL (IM)", dose: "Dose Padrão", volume: `${(calcWeight * 0.03).toFixed(2)} mL`, notes: "Volumétrico conforme protocolo.", color: 'blue' }
+  ];
 
-  const intubation = useMemo(() => [
-    { label: "Fentanil (50mcg/mL)", dose: `${(calcWeight * 2).toFixed(1)} mcg`, volume: `${((calcWeight * 2) / 50).toFixed(2)} mL` },
-    { label: "Ketamina (50mg/mL)", dose: `${(calcWeight * 1.5).toFixed(1)} mg`, volume: `${((calcWeight * 1.5) / 50).toFixed(2)} mL` },
-    { label: "Rocurônio (10mg/mL)", dose: `${(calcWeight * 1.2).toFixed(1)} mg`, volume: `${((calcWeight * 1.2) / 10).toFixed(2)} mL` },
-    { label: "Succinilcolina (100mg/10mL)", dose: `${(calcWeight * 1.5).toFixed(1)} mg`, volume: `${((calcWeight * 1.5) / 10).toFixed(2)} mL` },
-    { label: "Tubo (TOT)", dose: "Diâmetro", volume: `${((calcWeight / 4) + 4).toFixed(1)}`, notes: "Cálculo: (Peso / 4) + 4." }
-  ], [calcWeight]);
+  const intubation = [
+    { label: "Fentanil (50mcg/mL)", dose: `${(calcWeight * 2).toFixed(1)} mcg`, volume: `${((calcWeight * 2) / 50).toFixed(2)} mL`, color: 'red' },
+    { label: "Ketamina (50mg/mL)", dose: `${(calcWeight * 1.5).toFixed(1)} mg`, volume: `${((calcWeight * 1.5) / 50).toFixed(2)} mL`, color: 'red' },
+    { label: "Rocurônio (10mg/mL)", dose: `${(calcWeight * 1.2).toFixed(1)} mg`, volume: `${((calcWeight * 1.2) / 10).toFixed(2)} mL`, color: 'red' },
+    { label: "Succinilcolina (100mg/10mL)", dose: `${(calcWeight * 1.5).toFixed(1)} mg`, volume: `${((calcWeight * 1.5) / 10).toFixed(2)} mL`, color: 'red' },
+    { label: "Tubo (TOT)", dose: "Diâmetro", volume: `${((calcWeight / 4) + 4).toFixed(1)}`, notes: "Cálculo: (Peso / 4) + 4.", color: 'red' }
+  ];
 
-  const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleWeightInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    if (val === '') {
-      setWeight('');
-    } else {
-      const numVal = parseFloat(val);
-      if (!isNaN(numVal) && numVal >= 0 && numVal <= 200) {
-        setWeight(numVal);
-      }
+    if (val === '' || (parseFloat(val) >= 0 && parseFloat(val) <= 200)) {
+      setWeight(val);
     }
   };
 
-  // Tabs Configuration with Colors and Icons
-  const tabs = [
-    { id: MedicationCategory.ORAL, label: 'Oral', icon: '🍬', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { id: MedicationCategory.INJECTABLE, label: 'Injetável', icon: '💉', color: 'text-blue-600', bg: 'bg-blue-50' },
-    { id: MedicationCategory.INTUBATION, label: 'Intubação', icon: '🌬️', color: 'text-rose-600', bg: 'bg-rose-50' },
-  ];
-
   return (
     <div className="min-h-screen pb-20 font-sans bg-slate-50 selection:bg-indigo-500/30">
-      {/* Header com Blur e Sombra Suave */}
-      <header className="sticky top-0 z-50 px-4 py-3 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm transition-all">
+      {/* --- HEADER --- */}
+      <header className="sticky top-0 z-50 px-4 py-3 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
           <div className="flex flex-col">
-            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight leading-none bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight leading-none">
               PedCal
             </h1>
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 mt-0.5">
               Safety Dual View
             </span>
-            {/* Assinatura */}
             <span className="text-[9px] font-medium text-slate-400 tracking-wide mt-0.5 opacity-80">
               Dr. Diego Melo
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V1.2 FULL
+            V1.3 FULL
           </div>
         </div>
       </header>
 
-      {/* Hero Section - Peso */}
+      {/* --- HERO SECTION (INPUT PESO) --- */}
       <section className="bg-slate-900 pt-10 pb-16 px-4 rounded-b-[2.5rem] shadow-xl relative z-0 mb-[-2rem]">
-        <div className="mx-auto max-w-2xl bg-white/10 backdrop-blur-sm border border-white/10 rounded-3xl p-8 shadow-2xl transform transition-all duration-300">
+        <div className="mx-auto max-w-2xl bg-white/10 backdrop-blur-sm border border-white/10 rounded-3xl p-8 shadow-2xl">
           <label className="text-[11px] font-black uppercase text-slate-400 tracking-widest block mb-2">
             Peso do Paciente
           </label>
@@ -133,7 +119,7 @@ const App: React.FC = () => {
               type="number"
               inputMode="decimal"
               value={weight}
-              onChange={handleWeightChange}
+              onChange={handleWeightInput}
               className="w-full text-6xl sm:text-7xl font-extrabold text-white focus:outline-none placeholder:text-slate-700 bg-transparent tracking-tighter drop-shadow-md"
               placeholder="0"
               autoFocus
@@ -142,24 +128,28 @@ const App: React.FC = () => {
           </div>
           
           {/* Alerta de Teto */}
-          <div className={`mt-4 transition-all duration-500 overflow-hidden ${isAdultCeiling ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="flex items-center gap-2 text-rose-300 bg-rose-500/20 border border-rose-500/30 px-3 py-2 rounded-lg backdrop-blur-md">
+          {isAdultCeiling && (
+            <div className="mt-4 flex items-center gap-2 text-rose-300 bg-rose-500/20 border border-rose-500/30 px-3 py-2 rounded-lg backdrop-blur-md animate-pulse">
               <span className="text-lg">⚠️</span>
               <p className="font-bold text-[10px] uppercase tracking-wide">Teto de adulto atingido ({'>'}50kg)</p>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
-      {/* Sticky Tabs Navigation */}
+      {/* --- NAVEGAÇÃO (TABS) --- */}
       <div className="sticky top-[70px] z-40 px-4 pt-10 pb-4 mx-auto max-w-2xl">
          <div className="bg-white/70 p-1.5 rounded-2xl backdrop-blur-xl shadow-lg border border-white/50 flex gap-1 ring-1 ring-black/5">
-          {tabs.map((tab) => (
+          {[
+            { id: 'ORAL', label: 'Oral', icon: '🍬' },
+            { id: 'INJETÁVEL', label: 'Injetável', icon: '💉' },
+            { id: 'INTUBAÇÃO', label: 'Intubação', icon: '🌬️' }
+          ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-[10px] sm:text-xs font-extrabold uppercase transition-all duration-300
+                flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-[10px] sm:text-xs font-extrabold uppercase transition-all duration-200
                 ${activeTab === tab.id 
                   ? 'bg-white text-slate-900 shadow-md scale-[1.02] ring-1 ring-black/5' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}
@@ -173,36 +163,28 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content Grid */}
+      {/* --- GRID DE RESULTADOS --- */}
       <main className="mx-auto w-full max-w-2xl px-4 mt-2">
         {weight === '' ? (
-          <div className="text-center mt-12 opacity-50 animate-pulse">
+          <div className="text-center mt-12 opacity-50">
             <div className="w-20 h-20 bg-slate-200 rounded-full mx-auto mb-4 flex items-center justify-center shadow-inner">
               <span className="text-3xl grayscale">⚖️</span>
             </div>
             <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Insira o peso para calcular</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 animate-fade-in pb-10">
-            {activeTab === MedicationCategory.ORAL && orals.map((m, i) => (
-              <MedicationCard key={i} {...m} highlightColor="emerald" />
-            ))}
-            {activeTab === MedicationCategory.INJECTABLE && injectables.map((m, i) => (
-              <MedicationCard key={i} {...m} highlightColor="blue" />
-            ))}
-            {activeTab === MedicationCategory.INTUBATION && intubation.map((m, i) => (
-              <MedicationCard key={i} {...m} highlightColor="red" />
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-10">
+            {activeTab === 'ORAL' && orals.map((m, i) => <MedicationCard key={i} {...m} highlightColor={m.color} />)}
+            {activeTab === 'INJETÁVEL' && injectables.map((m, i) => <MedicationCard key={i} {...m} highlightColor={m.color} />)}
+            {activeTab === 'INTUBAÇÃO' && intubation.map((m, i) => <MedicationCard key={i} {...m} highlightColor={m.color} />)}
           </div>
         )}
       </main>
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.2.0 • Standalone Build</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.3 • Standalone Build</p>
       </footer>
     </div>
   );
-};
-
-export default App;
+}
