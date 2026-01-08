@@ -139,7 +139,8 @@ export default function App() {
     { label: "Amoxicilina (250mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 50 / 3).toFixed(1)} mL (8/8h)`, color: 'emerald' },
     { label: "Amoxicilina (400mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 80 / 2).toFixed(1)} mL (12/12h)`, color: 'emerald' },
     { label: "Prednisolona (3mg/mL)", dose: `${(calcWeight * 1).toFixed(1)}mg`, practicalResult: `${(calcWeight / 3).toFixed(1)} mL`, color: 'emerald' },
-    { label: "Buscopan Simples (Gts 10mg/mL)", dose: `${(calcWeight * 0.5).toFixed(1)} mg`, practicalResult: `${buscopanOralDrops} Gotas`, color: 'emerald', notes: "Dose: 0,3-0,5mg/kg. Máximo 20 gts." }
+    { label: "Buscopan Simples (Gts 10mg/mL)", dose: `${(calcWeight * 0.5).toFixed(1)} mg`, practicalResult: `${buscopanOralDrops} Gotas`, color: 'emerald', notes: "Dose: 0,3-0,5mg/kg. Máximo 20 gts." },
+    { label: "Ondansetrona (VO) - Diluído 1mg/1mL", dose: `${(calcWeight * 0.15).toFixed(2)}mg`, practicalResult: `${Math.min(Number((calcWeight * 0.15).toFixed(1)), 4)} mL`, color: 'emerald', notes: "Diluir 1cp (4mg) em 4mL de água e aspirar o volume acima." }
   ];
 
   const injectables = [
