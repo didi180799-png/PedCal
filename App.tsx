@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-// --- VERSÃO 1.4 STANDALONE (ULTRA-ESTÁVEL) ---
+// --- VERSÃO 1.5 STANDALONE (SEGURANÇA CLÍNICA MAXIMIZADA) ---
 // Autor: Dr. Diego Melo | Design: Premium Safety View
 
 // 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
@@ -45,7 +45,6 @@ const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlight
 // 2. Componente Principal (App)
 export default function App() {
   const [weight, setWeight] = useState<string>('');
-  // Usando strings diretas em vez de Enum para evitar problemas de compilação
   const [activeTab, setActiveTab] = useState('ORAL');
 
   // Conversão segura de peso
@@ -53,27 +52,44 @@ export default function App() {
   const calcWeight = !isNaN(numWeight) ? numWeight : 0;
   const isAdultCeiling = calcWeight > 50;
 
-  // --- CÁLCULO DE SEGURANÇA SBP (PARACETAMOL) ---
-  // Atualização: 10mg/kg (1 gota por kg exato)
-  // Trava de segurança: Math.min(peso, 55) -> Teto de 55 gotas
+  // --- CALCULADORA DE SEGURANÇA (TRAVAS CLÍNICAS) ---
+  
+  // 1. Paracetamol (Gts): 10mg/kg (1 gta/kg) | Teto: 55 gotas
   const paracetamolDrops = Math.round(Math.min(calcWeight, 55));
 
-  // --- Lógica de Medicamentos (Cálculos) ---
+  // 2. Dipirona (Gts): 20mg/kg (aprox 0.8 gta/kg) | Teto: 40 gotas
+  // Cálculo base: (Peso * 20mg) / 25mg/gota
+  const dipironaDrops = Math.round(Math.min((calcWeight * 20) / 25, 40));
+
+  // 3. Ondansetrona (EV): 0.15mg/kg | Teto: 4mg (2mL)
+  // Cálculo base: Peso * 0.075 mL/kg
+  const ondansetronaVol = Math.min(calcWeight * 0.075, 2.00).toFixed(2);
+
+  // 4. Dexametasona (EV): 0.6mg/kg | Teto: 10mg (2.5mL)
+  // Cálculo base: Peso * 0.15 mL/kg
+  const dexametasonaVol = Math.min(calcWeight * 0.15, 2.50).toFixed(2);
+
+  // 5. Diazepam (EV): 0.3mg/kg | Teto: 10mg (2mL)
+  // Cálculo base: Peso * 0.06 mL/kg
+  const diazepamVol = Math.min(calcWeight * 0.06, 2.00).toFixed(2);
+
+
+  // --- ARRAYS DE MEDICAMENTOS ---
   const orals = [
-    { label: "Dipirona (Gts 500mg/mL)", dose: `${(calcWeight * 20).toFixed(1)}mg`, practicalResult: `${((calcWeight * 20) / 25).toFixed(0)} Gotas`, color: 'emerald' },
-    { label: "Paracetamol (Gts 200mg/mL)", dose: `${(calcWeight * 10).toFixed(1)}mg`, practicalResult: `${paracetamolDrops} Gotas`, color: 'emerald' },
+    { label: "Dipirona (Gts 500mg/mL)", dose: `${(calcWeight * 20).toFixed(1)}mg`, practicalResult: `${dipironaDrops} Gotas`, color: 'emerald', notes: "Teto máx: 40 gotas" },
+    { label: "Paracetamol (Gts 200mg/mL)", dose: `${(calcWeight * 10).toFixed(1)}mg`, practicalResult: `${paracetamolDrops} Gotas`, color: 'emerald', notes: "Teto máx: 55 gotas" },
     { label: "Amoxicilina (250mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 50 / 3).toFixed(1)} mL (8/8h)`, color: 'emerald' },
     { label: "Amoxicilina (400mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 80 / 2).toFixed(1)} mL (12/12h)`, color: 'emerald' },
     { label: "Prednisolona (3mg/mL)", dose: `${(calcWeight * 1).toFixed(1)}mg`, practicalResult: `${(calcWeight / 3).toFixed(1)} mL`, color: 'emerald' }
   ];
 
   const injectables = [
-    { label: "1. ONDANSETRONA (EV) - (4mg/2mL)", dose: `${(calcWeight * 0.15).toFixed(2)} mg`, volume: `${(calcWeight * 0.075).toFixed(2)} mL`, color: 'blue' },
+    { label: "1. ONDANSETRONA (EV) - (4mg/2mL)", dose: `${(calcWeight * 0.15).toFixed(2)} mg`, volume: `${ondansetronaVol} mL`, color: 'blue', notes: "Teto máx: 4mg (2mL)" },
     { label: "2. PLASIL (IM/EV) - (10mg/2mL)", dose: `${(calcWeight * 0.1).toFixed(2)} mg`, volume: `${(calcWeight * 0.02).toFixed(2)} mL`, color: 'blue' },
     { label: "3. DIPIRONA (EV/IM) - (500mg/mL)", dose: `${(calcWeight * 25).toFixed(1)} mg`, volume: `${(calcWeight * 0.05).toFixed(2)} mL`, color: 'blue' },
-    { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${(calcWeight * 0.15).toFixed(2)} mL`, color: 'blue' },
-    { label: "5. DIAZEPAM (EV) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${(calcWeight * 0.06).toFixed(2)} mL`, notes: "Puro (Sem diluição).", color: 'blue' },
-    { label: "6. DRAMIN B6 DL (IM)", dose: "Dose Padrão", volume: `${(calcWeight * 0.03).toFixed(2)} mL`, notes: "Volumétrico conforme protocolo.", color: 'blue' }
+    { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${dexametasonaVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2.5mL)" },
+    { label: "5. DIAZEPAM (EV) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${diazepamVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2mL)" },
+    { label: "6. DRAMIN B6 DL (IM)", dose: "Dose Padrão", volume: `${(calcWeight * 0.03).toFixed(2)} mL`, color: 'blue', notes: "Volumétrico conforme protocolo." }
   ];
 
   const intubation = [
@@ -113,7 +129,7 @@ export default function App() {
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V1.4 FULL
+            V1.5 SAFETY
           </div>
         </div>
       </header>
@@ -193,7 +209,7 @@ export default function App() {
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.4 • Standalone Build</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.5 • Safety First</p>
       </footer>
     </div>
   );
