@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-// --- VERSÃO 2.2 STITCH LOVE MODE ---
+// --- VERSÃO 2.3 SEMANTIC VERBS ---
 // Autor: Dr. Diego Melo | Design: Premium Safety View
 
 // 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
-const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlightColor }: any) => {
+const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlightColor, actionVerb = "Aplicar" }: any) => {
   const colors: any = {
     emerald: 'border-emerald-500 text-emerald-700 bg-emerald-50',
     blue: 'border-blue-500 text-blue-700 bg-blue-50',
@@ -29,7 +29,7 @@ const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlight
       
       <div className="flex flex-col gap-1">
         <div className="text-slate-900 text-lg font-medium leading-tight">
-          Aplicar <strong className={`font-black ${textColor} text-xl`}>{practicalResult || volume}</strong>
+          {actionVerb} <strong className={`font-black ${textColor} text-xl`}>{practicalResult || volume}</strong>
         </div>
         <div className="flex items-center flex-wrap gap-2 mt-3 pt-3 border-t border-slate-50">
            <span className={`text-[9px] font-bold px-2 py-1 rounded-md uppercase tracking-wide bg-opacity-50 ${theme.split(' ')[2]} ${textColor}`}>
@@ -199,7 +199,7 @@ export default function App() {
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V2.2 STITCH
+            V2.3 VERBS
           </div>
         </div>
       </header>
@@ -312,16 +312,16 @@ export default function App() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-10">
-            {activeTab === 'ORAL' && orals.map((m, i) => <MedicationCard key={i} {...m} highlightColor={m.color} />)}
-            {activeTab === 'INJETÁVEL' && injectables.map((m, i) => <MedicationCard key={i} {...m} highlightColor={m.color} />)}
-            {activeTab === 'INTUBAÇÃO' && intubation.map((m, i) => <MedicationCard key={i} {...m} highlightColor={m.color} />)}
+            {activeTab === 'ORAL' && orals.map((m, i) => <MedicationCard key={i} {...m} highlightColor={m.color} actionVerb="Ofertar" />)}
+            {activeTab === 'INJETÁVEL' && injectables.map((m, i) => <MedicationCard key={i} {...m} highlightColor={m.color} actionVerb="Aplicar" />)}
+            {activeTab === 'INTUBAÇÃO' && intubation.map((m, i) => <MedicationCard key={i} {...m} highlightColor={m.color} actionVerb="Aplicar" />)}
           </div>
         )}
       </main>
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v2.2 • Safety First</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v2.3 • Safety First</p>
       </footer>
     </div>
   );
