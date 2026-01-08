@@ -81,8 +81,13 @@ export default function App() {
 
   const handleWeightInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    if (val === '' || (parseFloat(val) >= 0 && parseFloat(val) <= 200)) {
-      setWeight(val);
+    if (val === '') {
+      setWeight('');
+    } else {
+      const numVal = parseFloat(val);
+      if (!isNaN(numVal) && numVal >= 0 && numVal <= 200) {
+        setWeight(val.toString());
+      }
     }
   };
 
