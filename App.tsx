@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// --- VERSÃO 2.3 SEMANTIC VERBS ---
+// --- VERSÃO 2.4 CLINICAL UPDATE ---
 // Autor: Dr. Diego Melo | Design: Premium Safety View
 
 // 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
@@ -116,22 +116,25 @@ export default function App() {
   // Cálculo base: (Peso * 20mg) / 25mg/gota
   const dipironaDrops = Math.round(Math.min((calcWeight * 20) / 25, 40));
 
-  // 3. Ondansetrona (EV): 0.15mg/kg | Teto: 4mg (2mL)
+  // 3. Bromoprida (Gts): 1 gta/kg | Teto: 40 gotas
+  const bromopridaDrops = Math.round(Math.min(calcWeight, 40));
+
+  // 4. Ondansetrona (EV): 0.15mg/kg | Teto: 4mg (2mL)
   // Cálculo base: Peso * 0.075 mL/kg
   const ondansetronaVol = Math.min(calcWeight * 0.075, 2.00).toFixed(2);
 
-  // 4. Dexametasona (EV): 0.6mg/kg | Teto: 10mg (2.5mL)
+  // 5. Dexametasona (EV): 0.6mg/kg | Teto: 10mg (2.5mL)
   // Cálculo base: Peso * 0.15 mL/kg
   const dexametasonaVol = Math.min(calcWeight * 0.15, 2.50).toFixed(2);
 
-  // 5. Diazepam (EV): 0.3mg/kg | Teto: 10mg (2mL)
+  // 6. Diazepam (EV): 0.3mg/kg | Teto: 10mg (2mL)
   // Cálculo base: Peso * 0.06 mL/kg
   const diazepamVol = Math.min(calcWeight * 0.06, 2.00).toFixed(2);
 
-  // 6. Buscopan (Oral): 1 gta/kg (Dose cautelosa) | Teto: 20 gotas
+  // 7. Buscopan (Oral): 1 gta/kg (Dose cautelosa) | Teto: 20 gotas
   const buscopanOralDrops = Math.min(Math.round(calcWeight), 20);
 
-  // 7. Buscopan (EV): 0.4mg/kg | Teto: 1 Ampola (1mL)
+  // 8. Buscopan (EV): 0.4mg/kg | Teto: 1 Ampola (1mL)
   const buscopanInjVol = Math.min(Number((calcWeight * 0.02).toFixed(2)), 1).toFixed(2);
 
 
@@ -139,6 +142,7 @@ export default function App() {
   const orals = [
     { label: "Dipirona (Gts 500mg/mL)", dose: `${(calcWeight * 20).toFixed(1)}mg`, practicalResult: `${dipironaDrops} Gotas`, color: 'emerald', notes: "Teto máx: 40 gotas" },
     { label: "Paracetamol (Gts 200mg/mL)", dose: `${(calcWeight * 10).toFixed(1)}mg`, practicalResult: `${paracetamolDrops} Gotas`, color: 'emerald', notes: "Teto máx: 55 gotas" },
+    { label: "Bromoprida (Gts 4mg/mL)", dose: `${(calcWeight * 0.15).toFixed(2)}mg`, practicalResult: `${bromopridaDrops} Gotas`, color: 'emerald', notes: "Dose: 0,15mg/kg/dose (1 gota/kg). Máximo 40 gotas." },
     { label: "Amoxicilina (250mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 50 / 3).toFixed(1)} mL (8/8h)`, color: 'emerald' },
     { label: "Amoxicilina (400mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 80 / 2).toFixed(1)} mL (12/12h)`, color: 'emerald' },
     { label: "Prednisolona (3mg/mL)", dose: `${(calcWeight * 1).toFixed(1)}mg`, practicalResult: `${(calcWeight / 3).toFixed(1)} mL`, color: 'emerald' },
@@ -151,7 +155,7 @@ export default function App() {
     { label: "2. PLASIL (IM/EV) - (10mg/2mL)", dose: `${(calcWeight * 0.1).toFixed(2)} mg`, volume: `${(calcWeight * 0.02).toFixed(2)} mL`, color: 'blue' },
     { label: "3. DIPIRONA (EV/IM) - (500mg/mL)", dose: `${(calcWeight * 25).toFixed(1)} mg`, volume: `${(calcWeight * 0.05).toFixed(2)} mL`, color: 'blue' },
     { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${dexametasonaVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2.5mL)" },
-    { label: "5. DIAZEPAM (EV) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${diazepamVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2mL)" },
+    { label: "5. DIAZEPAM (IM) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${diazepamVol} mL`, color: 'blue', notes: "Dose: 0,3mg/kg. Aplicar via Intramuscular profunda." },
     { label: "6. DRAMIN B6 DL (IM)", dose: "Dose Padrão", volume: `${(calcWeight * 0.03).toFixed(2)} mL`, color: 'blue', notes: "Volumétrico conforme protocolo." },
     { label: "Buscopan Simples (EV/IM) (20mg/mL)", dose: `${(calcWeight * 0.4).toFixed(1)} mg`, volume: `${buscopanInjVol} mL`, color: 'blue', notes: "Dose: 0,4mg/kg. Teto: 1 ampola." }
   ];
@@ -199,7 +203,7 @@ export default function App() {
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V2.3 VERBS
+            V2.4 CLINICAL
           </div>
         </div>
       </header>
@@ -321,7 +325,7 @@ export default function App() {
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v2.3 • Safety First</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v2.4 • Safety First</p>
       </footer>
     </div>
   );
