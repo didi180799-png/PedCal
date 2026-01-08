@@ -1,0 +1,5 @@
+{
+  "name": "PedCal - Pediatric Calculator",
+  "description": "A safety-focused pediatric medication calculator providing rapid dosage calculations for oral, injectable, and intubation scenarios based on patient weight.",
+  "requestFramePermissions": []
+}
