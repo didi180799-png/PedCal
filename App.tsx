@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-// --- VERSÃO 1.6 STANDALONE (SEGURANÇA CLÍNICA MAXIMIZADA + BUSCOPAN) ---
+// --- VERSÃO 1.7 STANDALONE (SEGURANÇA CLÍNICA MAXIMIZADA + BUSCOPAN CONSERVADOR) ---
 // Autor: Dr. Diego Melo | Design: Premium Safety View
 
 // 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
@@ -73,8 +73,8 @@ export default function App() {
   // Cálculo base: Peso * 0.06 mL/kg
   const diazepamVol = Math.min(calcWeight * 0.06, 2.00).toFixed(2);
 
-  // 6. Buscopan (Oral): 2 gts/kg | Teto: 20 gotas
-  const buscopanOralDrops = Math.min(Math.round(calcWeight * 2), 20);
+  // 6. Buscopan (Oral): 1 gta/kg (Dose cautelosa) | Teto: 20 gotas
+  const buscopanOralDrops = Math.min(Math.round(calcWeight), 20);
 
   // 7. Buscopan (EV): 0.4mg/kg | Teto: 1 Ampola (1mL)
   const buscopanInjVol = Math.min(Number((calcWeight * 0.02).toFixed(2)), 1).toFixed(2);
@@ -137,7 +137,7 @@ export default function App() {
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V1.6 SAFETY
+            V1.7 SAFETY
           </div>
         </div>
       </header>
@@ -217,7 +217,7 @@ export default function App() {
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.6 • Safety First</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.7 • Safety First</p>
       </footer>
     </div>
   );
