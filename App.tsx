@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-// --- VERSÃO 1.3 STANDALONE (ULTRA-ESTÁVEL) ---
+// --- VERSÃO 1.4 STANDALONE (ULTRA-ESTÁVEL) ---
 // Autor: Dr. Diego Melo | Design: Premium Safety View
 
 // 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
@@ -53,10 +53,15 @@ export default function App() {
   const calcWeight = !isNaN(numWeight) ? numWeight : 0;
   const isAdultCeiling = calcWeight > 50;
 
+  // --- CÁLCULO DE SEGURANÇA SBP (PARACETAMOL) ---
+  // Atualização: 10mg/kg (1 gota por kg exato)
+  // Trava de segurança: Math.min(peso, 55) -> Teto de 55 gotas
+  const paracetamolDrops = Math.round(Math.min(calcWeight, 55));
+
   // --- Lógica de Medicamentos (Cálculos) ---
   const orals = [
     { label: "Dipirona (Gts 500mg/mL)", dose: `${(calcWeight * 20).toFixed(1)}mg`, practicalResult: `${((calcWeight * 20) / 25).toFixed(0)} Gotas`, color: 'emerald' },
-    { label: "Paracetamol (Gts 200mg/mL)", dose: `${(calcWeight * 15).toFixed(1)}mg`, practicalResult: `${((calcWeight * 15) / 10).toFixed(0)} Gotas`, color: 'emerald' },
+    { label: "Paracetamol (Gts 200mg/mL)", dose: `${(calcWeight * 10).toFixed(1)}mg`, practicalResult: `${paracetamolDrops} Gotas`, color: 'emerald' },
     { label: "Amoxicilina (250mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 50 / 3).toFixed(1)} mL (8/8h)`, color: 'emerald' },
     { label: "Amoxicilina (400mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 80 / 2).toFixed(1)} mL (12/12h)`, color: 'emerald' },
     { label: "Prednisolona (3mg/mL)", dose: `${(calcWeight * 1).toFixed(1)}mg`, practicalResult: `${(calcWeight / 3).toFixed(1)} mL`, color: 'emerald' }
@@ -108,7 +113,7 @@ export default function App() {
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V1.3 FULL
+            V1.4 FULL
           </div>
         </div>
       </header>
@@ -188,7 +193,7 @@ export default function App() {
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.3 • Standalone Build</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.4 • Standalone Build</p>
       </footer>
     </div>
   );
