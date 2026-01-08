@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// --- VERSÃO 1.9 ULTRA-SMOOTH (PERFORMANCE TUNED) ---
+// --- VERSÃO 2.0 STABLE (SCROLL TO TOP RESET) ---
 // Autor: Dr. Diego Melo | Design: Premium Safety View
 
 // 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
@@ -73,17 +73,16 @@ export default function App() {
         return;
       }
 
-      // Lógica de Decisão
-      if (scrollY < 60) {
-        // Zona de Segurança Superior: Sempre expandido perto do topo
+      // Lógica de Decisão Ajustada:
+      // Só expande se VOLTAR ao topo (< 80px).
+      // Mantém compacto enquanto rola para cima no meio da página.
+      if (scrollY < 80) {
         setIsCompact(false);
-      } else if (direction === "down" && scrollY > 100) {
-        // Rolando para baixo: Compacta
+      } else if (direction === "down" && scrollY > 120) {
         setIsCompact(true);
-      } else if (direction === "up") {
-        // Rolando para cima: Expande
-        setIsCompact(false);
       }
+      // Nota: Removemos o 'else if (direction === "up") setIsCompact(false)' 
+      // para evitar que a barra abra prematuramente ao rolar para cima.
 
       lastScrollY = scrollY;
       ticking = false;
@@ -196,7 +195,7 @@ export default function App() {
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V1.9 SMOOTH
+            V2.0 STABLE
           </div>
         </div>
       </header>
@@ -309,7 +308,7 @@ export default function App() {
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.9 • Safety First</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v2.0 • Safety First</p>
       </footer>
     </div>
   );
