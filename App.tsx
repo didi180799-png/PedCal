@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-// --- VERSÃO 1.7 STANDALONE (SEGURANÇA CLÍNICA MAXIMIZADA + BUSCOPAN CONSERVADOR) ---
+// --- VERSÃO 1.9 ULTRA-SMOOTH (PERFORMANCE TUNED) ---
 // Autor: Dr. Diego Melo | Design: Premium Safety View
 
 // 1. Componente Interno do Cartão (Embutido para evitar erros de importação)
@@ -46,6 +46,59 @@ const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlight
 export default function App() {
   const [weight, setWeight] = useState<string>('');
   const [activeTab, setActiveTab] = useState('ORAL');
+  
+  // Estado para controle da animação de scroll
+  const [isCompact, setIsCompact] = useState(false);
+
+  // Efeito de Scroll Otimizado (RAF + Hysteresis)
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const updateScrollDirection = () => {
+      const scrollY = window.scrollY;
+      
+      // Proteção para scroll negativo (iOS bounce)
+      if (scrollY < 0) {
+        ticking = false;
+        return;
+      }
+
+      const direction = scrollY > lastScrollY ? "down" : "up";
+      const distance = Math.abs(scrollY - lastScrollY);
+
+      // Histerese: ignora movimentos menores que 10px para evitar 'jitter'
+      if (distance < 10) {
+        ticking = false;
+        return;
+      }
+
+      // Lógica de Decisão
+      if (scrollY < 60) {
+        // Zona de Segurança Superior: Sempre expandido perto do topo
+        setIsCompact(false);
+      } else if (direction === "down" && scrollY > 100) {
+        // Rolando para baixo: Compacta
+        setIsCompact(true);
+      } else if (direction === "up") {
+        // Rolando para cima: Expande
+        setIsCompact(false);
+      }
+
+      lastScrollY = scrollY;
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateScrollDirection);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Conversão segura de peso
   const numWeight = parseFloat(weight);
@@ -120,10 +173,16 @@ export default function App() {
     }
   };
 
+  const tabs = [
+    { id: 'ORAL', label: 'Oral', icon: '🍬' },
+    { id: 'INJETÁVEL', label: 'Injetável', icon: '💉' },
+    { id: 'INTUBAÇÃO', label: 'Intubação', icon: '🌬️' }
+  ];
+
   return (
     <div className="min-h-screen pb-20 font-sans bg-slate-50 selection:bg-indigo-500/30">
       {/* --- HEADER --- */}
-      <header className="sticky top-0 z-50 px-4 py-3 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
+      <header className="sticky top-0 z-50 px-4 py-3 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm transition-all duration-300">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
           <div className="flex flex-col">
             <h1 className="text-xl font-extrabold text-slate-900 tracking-tight leading-none">
@@ -137,7 +196,7 @@ export default function App() {
             </span>
           </div>
           <div className="bg-slate-900 shadow-lg shadow-slate-900/20 px-3 py-1 rounded-full text-white text-[10px] font-bold">
-            V1.7 SAFETY
+            V1.9 SMOOTH
           </div>
         </div>
       </header>
@@ -171,29 +230,62 @@ export default function App() {
         </div>
       </section>
 
-      {/* --- NAVEGAÇÃO (TABS) --- */}
-      <div className="sticky top-[70px] z-40 px-4 pt-10 pb-4 mx-auto max-w-2xl">
-         <div className="bg-white/70 p-1.5 rounded-2xl backdrop-blur-xl shadow-lg border border-white/50 flex gap-1 ring-1 ring-black/5">
-          {[
-            { id: 'ORAL', label: 'Oral', icon: '🍬' },
-            { id: 'INJETÁVEL', label: 'Injetável', icon: '💉' },
-            { id: 'INTUBAÇÃO', label: 'Intubação', icon: '🌬️' }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`
-                flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-[10px] sm:text-xs font-extrabold uppercase transition-all duration-200
-                ${activeTab === tab.id 
-                  ? 'bg-white text-slate-900 shadow-md scale-[1.02] ring-1 ring-black/5' 
-                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}
-              `}
-            >
-              <span className="text-sm">{tab.icon}</span>
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.label.substring(0, 3)}</span>
-            </button>
-          ))}
+      {/* --- NAVEGAÇÃO INTERATIVA (SCROLL AWARE) --- */}
+      <div 
+        className={`
+          sticky top-[70px] z-40 mx-auto transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]
+          ${isCompact ? 'w-14 mt-4' : 'w-full max-w-2xl px-4 pt-10 pb-4'}
+        `}
+      >
+         <div 
+          className={`
+            flex items-center justify-between backdrop-blur-xl shadow-lg border border-white/50 
+            transition-all duration-500 overflow-hidden relative
+            ${isCompact 
+              ? 'w-14 h-14 rounded-full bg-white p-0 justify-center shadow-xl ring-2 ring-indigo-500/10' // Modo Bolinha
+              : 'w-full rounded-2xl bg-white/70 p-1.5 gap-1 ring-1 ring-black/5' // Modo Barra
+            }
+          `}
+         >
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            
+            // Se estiver compacto, só renderiza o ativo
+            if (isCompact && !isActive) return null;
+
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                   if (isCompact) {
+                     window.scrollTo({ top: 0, behavior: 'smooth' });
+                   } else {
+                     setActiveTab(tab.id);
+                   }
+                }}
+                className={`
+                  transition-all duration-300 flex items-center justify-center
+                  ${isCompact
+                    ? 'w-full h-full text-2xl animate-in fade-in zoom-in duration-300' // Ícone grande na bolinha
+                    : `
+                      flex-1 gap-2 rounded-xl py-3 text-[10px] sm:text-xs font-extrabold uppercase
+                      ${isActive 
+                        ? 'bg-white text-slate-900 shadow-md scale-[1.02] ring-1 ring-black/5' 
+                        : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}
+                    `
+                  }
+                `}
+              >
+                <span className={isCompact ? "" : "text-sm"}>{tab.icon}</span>
+                {!isCompact && (
+                  <>
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    <span className="sm:hidden">{tab.label.substring(0, 3)}</span>
+                  </>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -217,7 +309,7 @@ export default function App() {
 
       <footer className="mx-auto max-w-2xl p-8 text-center">
         <p className="text-[10px] font-bold uppercase text-slate-300 tracking-widest mb-2">Decisão Clínica Assistida</p>
-        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.7 • Safety First</p>
+        <p className="text-[9px] text-slate-300 font-medium">PedCal v1.9 • Safety First</p>
       </footer>
     </div>
   );
