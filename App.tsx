@@ -109,7 +109,7 @@ export default function App() {
   const [weight, setWeight] = useState<string>('');
   const [activeTab, setActiveTab] = useState('ORAL');
   
-  // Estado para controle da animação de scroll e FAB Inteligente
+  // Estado para controle da animação de scroll e Cinemática de Morfose
   const [isCompact, setIsCompact] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -117,33 +117,25 @@ export default function App() {
 
   // Efeito de Scroll Otimizado e Detecção de Movimento
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-    let ticking = false;
     let scrollTimeout: any = null;
 
     const onScroll = () => {
       const scrollY = window.scrollY;
       
-      // 1. Lógica de Detecção de Movimento (Ghost Effect)
-      // Reage instantaneamente ao scroll
+      // 1. Lógica de Detecção de Movimento (Ghost Effect - Debounce)
       setIsScrolling(true);
-      
       if (scrollTimeout) clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
       }, 150);
 
-      // 2. Lógica de Compactação (Smart FAB)
-      const direction = scrollY > lastScrollY ? "down" : "up";
-      
-      // Threshold ajustado para 180px para evitar efeito amontoado
-      if (scrollY < 180) {
-        setIsCompact(false);
-      } else if (direction === "down" && scrollY > 120) {
+      // 2. Lógica de Morfose (Barra -> Bola)
+      // O limite de 120px define o momento da transformação
+      if (scrollY > 120) {
         setIsCompact(true);
+      } else {
+        setIsCompact(false);
       }
-
-      lastScrollY = scrollY;
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -299,82 +291,64 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- NAVEGAÇÃO INTERATIVA (SMART FAB) --- */}
-        <div 
-          className={`
-            transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] will-change-transform will-change-opacity z-[100]
-            ${isCompact 
-                ? 'fixed top-4 left-1/2 w-auto mt-0' 
-                : 'sticky top-[80px] z-40 mx-auto w-full max-w-2xl px-4 pt-12 pb-6'
-            }
-          `}
-          style={{
-             // GPU acceleration fix for mobile (Pinned to Viewport)
-             transform: isCompact ? 'translate3d(-50%, 0, 0)' : 'none',
-             left: isCompact ? '50%' : 'auto'
-          }}
-        >
+        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Sticky -> Fixed/Compact) --- */}
+        {/* Container Wrapper: Garante o espaço e posicionamento */}
+        <div className={`
+           sticky top-4 z-[100] mx-auto w-full max-w-2xl px-4 pt-12 pb-6 flex justify-center pointer-events-none
+           ${isCompact ? 'h-auto' : 'h-auto'}
+        `}>
+          {/* Elemento Morfo: A Barra que vira Bola */}
           <div 
             className={`
-              flex items-center justify-between border transition-all overflow-hidden relative
+              pointer-events-auto relative flex items-center transition-all duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275) will-change-[width,transform,opacity,background-color]
               ${isCompact 
-                ? `w-14 h-14 rounded-full p-2 justify-center shadow-2xl flex-shrink-0 bg-gradient-to-br shadow-indigo-500/50
+                ? `w-16 h-16 rounded-full p-0 shadow-2xl shadow-indigo-500/50 justify-center
                    ${isScrolling 
-                      ? 'from-indigo-500/10 to-violet-600/10 backdrop-blur-md border-white/20 ring-4 ring-white/20 duration-100' // Fade Rápido
-                      : 'from-indigo-500 to-violet-600 backdrop-blur-none border-white/70 ring-4 ring-white/70 duration-500' // Retorno Suave
-                   }
-                  `
-                : 'w-full rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border-white/70 backdrop-blur-xl'
+                      ? 'bg-indigo-600/10 backdrop-blur-md border border-white/20' // Fantasma no movimento
+                      : 'bg-gradient-to-br from-indigo-500 to-violet-600 border border-transparent' // Sólido parado
+                   }`
+                : 'w-full h-16 rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border border-white/70 backdrop-blur-xl justify-between'
               }
             `}
           >
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id;
-              
-              if (isCompact && !isActive) return null;
-
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    if (isCompact) {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    } else {
-                      setActiveTab(tab.id);
-                    }
-                  }}
-                  className={`
-                    transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] flex items-center justify-center relative cursor-pointer select-none
-                    ${isCompact
-                      ? 'w-full h-full animate-in fade-in zoom-in duration-300 rounded-full overflow-hidden active:scale-[0.9]' 
-                      : `
-                        flex-1 gap-2 rounded-full py-3.5 text-[10px] sm:text-xs font-black uppercase tracking-wide
+            {/* CONTEÚDO 1: ABAS (Mostra apenas quando expandido) */}
+            <div className={`flex w-full h-full items-center justify-between transition-opacity duration-300 ${isCompact ? 'opacity-0 absolute pointer-events-none' : 'opacity-100 relative'}`}>
+               {tabs.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => !isCompact && setActiveTab(tab.id)}
+                      className={`
+                        transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 relative cursor-pointer select-none h-full
+                        text-[10px] sm:text-xs font-black uppercase tracking-wide
                         ${isActive 
                           ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-xl shadow-indigo-500/30 transform scale-[1.03]' 
                           : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'}
-                      `
-                    }
-                  `}
-                >
-                  {/* LÓGICA DE EXIBIÇÃO: IMAGEM STITCH vs ÍCONES PADRÃO */}
-                  {isCompact ? (
-                    <div className="w-full h-full relative flex items-center justify-center">
-                      <img 
-                        src={stitchImageUrl} 
-                        alt="Stitch" 
-                        className="w-[85%] h-[85%] object-contain drop-shadow-md filter saturate-110 opacity-100"
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <span className="text-sm opacity-80">{tab.icon}</span>
-                      <span className="hidden sm:inline">{tab.label}</span>
-                      <span className="sm:hidden">{tab.label.substring(0, 3)}</span>
-                    </>
-                  )}
-                </button>
-              );
-            })}
+                      `}
+                    >
+                        <span className="text-sm opacity-80">{tab.icon}</span>
+                        <span className="hidden sm:inline">{tab.label}</span>
+                        <span className="sm:hidden">{tab.label.substring(0, 3)}</span>
+                    </button>
+                  );
+               })}
+            </div>
+
+            {/* CONTEÚDO 2: STITCH (Mostra apenas quando compacto) */}
+            <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isCompact ? 'opacity-100 delay-100' : 'opacity-0 pointer-events-none'}`}>
+               <img 
+                 src={stitchImageUrl} 
+                 alt="Stitch" 
+                 className="w-[85%] h-[85%] object-contain drop-shadow-md filter saturate-110 opacity-100 transform scale-125"
+               />
+               {/* Botão invisível para scroll top */}
+               <button 
+                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                 className="absolute inset-0 w-full h-full cursor-pointer z-10"
+                 aria-label="Voltar ao topo"
+               />
+            </div>
           </div>
         </div>
 
