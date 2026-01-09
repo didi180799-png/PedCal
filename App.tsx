@@ -121,22 +121,22 @@ export default function App() {
     let ticking = false;
     let scrollTimeout: any = null;
 
-    const updateScrollLogic = () => {
+    const onScroll = () => {
       const scrollY = window.scrollY;
       
-      // 1. Lógica de Detecção de Movimento
+      // 1. Lógica de Detecção de Movimento (Ghost Effect)
+      // Reage instantaneamente ao scroll
       setIsScrolling(true);
+      
       if (scrollTimeout) clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
       }, 150);
 
-      if (scrollY < 0) { ticking = false; return; }
-
+      // 2. Lógica de Compactação (Smart FAB)
       const direction = scrollY > lastScrollY ? "down" : "up";
       
-      // 2. Lógica de Compactação (Smart FAB)
-      // Ajuste de threshold para < 180 para evitar aspecto amontoado no topo
+      // Threshold ajustado para 180px para evitar efeito amontoado
       if (scrollY < 180) {
         setIsCompact(false);
       } else if (direction === "down" && scrollY > 120) {
@@ -144,17 +144,9 @@ export default function App() {
       }
 
       lastScrollY = scrollY;
-      ticking = false;
     };
 
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateScrollLogic);
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -307,12 +299,20 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- NAVEGAÇÃO INTERATIVA (SCROLL AWARE) --- */}
+        {/* --- NAVEGAÇÃO INTERATIVA (SMART FAB) --- */}
         <div 
           className={`
-            transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] will-change-transform will-change-opacity
-            ${isCompact ? 'fixed bottom-8 left-1/2 -translate-x-1/2 z-50 w-auto mt-0' : 'sticky top-[80px] z-40 mx-auto w-full max-w-2xl px-4 pt-12 pb-6'}
+            transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] will-change-transform will-change-opacity z-[100]
+            ${isCompact 
+                ? 'fixed top-4 left-1/2 w-auto mt-0' 
+                : 'sticky top-[80px] z-40 mx-auto w-full max-w-2xl px-4 pt-12 pb-6'
+            }
           `}
+          style={{
+             // GPU acceleration fix for mobile (Pinned to Viewport)
+             transform: isCompact ? 'translate3d(-50%, 0, 0)' : 'none',
+             left: isCompact ? '50%' : 'auto'
+          }}
         >
           <div 
             className={`
@@ -320,16 +320,13 @@ export default function App() {
               ${isCompact 
                 ? `w-14 h-14 rounded-full p-2 justify-center shadow-2xl flex-shrink-0 bg-gradient-to-br shadow-indigo-500/50
                    ${isScrolling 
-                      ? 'from-indigo-500/10 to-violet-600/10 backdrop-blur-md border-white/20 ring-4 ring-white/20' 
-                      : 'from-indigo-500 to-violet-600 backdrop-blur-none border-white/70 ring-4 ring-white/70'
+                      ? 'from-indigo-500/10 to-violet-600/10 backdrop-blur-md border-white/20 ring-4 ring-white/20 duration-100' // Fade Rápido
+                      : 'from-indigo-500 to-violet-600 backdrop-blur-none border-white/70 ring-4 ring-white/70 duration-500' // Retorno Suave
                    }
                   `
                 : 'w-full rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border-white/70 backdrop-blur-xl'
               }
             `}
-            style={{
-                transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
-            }}
           >
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
