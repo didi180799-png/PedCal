@@ -130,7 +130,7 @@ export default function App() {
       }, 150);
 
       // 2. Lógica de Morfose (Barra -> Bola)
-      // LIMITE AJUSTADO PARA 150px
+      // Ajuste para 150px para garantir que passou o header/hero
       if (scrollY > 150) {
         setIsCompact(true);
       } else {
@@ -292,12 +292,12 @@ export default function App() {
         </section>
 
         {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Sticky <-> Fixed) --- */}
-        {/* CORREÇÃO DO TRAVAMENTO: Alternância Dinâmica de Posicionamento */}
+        {/* CORREÇÃO DO HIATO: Ajuste de Ancoragem e Transição Suave */}
         <div className={`
            z-[100] transition-all duration-300 ease-in-out
            ${isCompact 
-             ? 'fixed top-4 left-1/2 -translate-x-1/2 w-auto pointer-events-none' // FIXED MODE: Flutua e centraliza
-             : 'sticky top-4 mx-auto w-full max-w-2xl px-4 pt-12 pb-6 flex justify-center pointer-events-none' // STICKY MODE: Segue o fluxo
+             ? 'fixed top-4 left-1/2 -translate-x-1/2 w-auto pointer-events-none' // FIXED MODE: Flutua
+             : 'sticky top-2 mx-auto w-full max-w-2xl px-4 py-4 flex justify-center pointer-events-none' // STICKY MODE: Pousa no hiato sem padding excessivo
            }
         `}>
           {/* Elemento Morfo: A Barra que vira Bola */}
@@ -313,10 +313,10 @@ export default function App() {
                 : 'w-full h-16 rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border border-white/70 backdrop-blur-xl justify-between'
               }
             `}
-            style={{ transform: 'translate3d(0,0,0)' }} // FLUIDEZ DE HARDWARE: Força GPU
+            style={{ transform: 'translate3d(0,0,0)' }} // FLUIDEZ DE HARDWARE
           >
-            {/* CONTEÚDO 1: ABAS (Mostra apenas quando expandido) */}
-            <div className={`flex w-full h-full items-center justify-between transition-opacity duration-300 ${isCompact ? 'opacity-0 absolute pointer-events-none' : 'opacity-100 relative'}`}>
+            {/* CONTEÚDO 1: ABAS (Fade-in suave ao expandir) */}
+            <div className={`flex w-full h-full items-center justify-between transition-opacity duration-300 delay-100 ${isCompact ? 'opacity-0 absolute pointer-events-none' : 'opacity-100 relative'}`}>
                {tabs.map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
@@ -339,8 +339,8 @@ export default function App() {
                })}
             </div>
 
-            {/* CONTEÚDO 2: STITCH (Mostra apenas quando compacto) */}
-            <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isCompact ? 'opacity-100 delay-100' : 'opacity-0 pointer-events-none'}`}>
+            {/* CONTEÚDO 2: STITCH (Fade-out suave ao expandir) */}
+            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isCompact ? 'opacity-100 delay-100 scale-100' : 'opacity-0 scale-50 pointer-events-none'}`}>
                <img 
                  src={stitchImageUrl} 
                  alt="Stitch" 
