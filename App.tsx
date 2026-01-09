@@ -130,8 +130,8 @@ export default function App() {
       }, 150);
 
       // 2. Lógica de Morfose (Barra -> Bola)
-      // RESTAURAÇÃO DO TIMING (Valor de Ouro): 120px
-      if (scrollY > 120) {
+      // GATILHO DE SEGURANÇA (Ação Forçada): 320px
+      if (scrollY > 320) {
         setIsCompact(true);
       } else {
         setIsCompact(false);
@@ -292,68 +292,71 @@ export default function App() {
         </section>
 
         {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Sticky <-> Fixed) --- */}
-        {/* CORREÇÃO DA ANCORAGEM (Fim da Dança) */}
-        <div className={`
-           z-[100] transition-all duration-500 ease-in-out pointer-events-none
-           ${isCompact 
-             ? 'fixed top-4 left-1/2 -translate-x-1/2 w-auto' // FIXED MODE: Flutua
-             : 'sticky top-4 pt-12 pb-6 mx-auto w-full max-w-2xl px-4 flex justify-center' // STICKY MODE: Pousa suavemente
-           }
-        `}>
-          {/* Elemento Morfo: A Barra que vira Bola (CINEMÁTICA DO STITCH) */}
-          <div 
-            className={`
-              pointer-events-auto relative flex items-center transition-all duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275) will-change-[width,transform,opacity,background-color]
-              ${isCompact 
-                ? `w-16 h-16 rounded-full p-0 shadow-2xl shadow-indigo-500/50 justify-center
-                   ${isScrolling 
-                      ? 'bg-indigo-600/10 backdrop-blur-md border border-white/20' // Fantasma apenas no scroll
-                      : 'bg-gradient-to-br from-indigo-500 to-violet-600 border border-transparent' // Sólido parado
-                   }`
-                : 'w-full h-16 rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border border-white/70 backdrop-blur-xl justify-between'
-              }
-            `}
-            style={{ transform: 'translate3d(0,0,0)' }} // FLUIDEZ DE HARDWARE
-          >
-            {/* CONTEÚDO 1: ABAS */}
-            <div className={`flex w-full h-full items-center justify-between transition-opacity duration-300 ${isCompact ? 'opacity-0 absolute pointer-events-none' : 'opacity-100 relative'}`}>
-               {tabs.map((tab) => {
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => !isCompact && setActiveTab(tab.id)}
-                      className={`
-                        transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 relative cursor-pointer select-none h-full
-                        text-[10px] sm:text-xs font-black uppercase tracking-wide
-                        ${isActive 
-                          ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-xl shadow-indigo-500/30 transform scale-[1.03]' 
-                          : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'}
-                      `}
-                    >
-                        <span className="text-sm opacity-80">{tab.icon}</span>
-                        <span className="hidden sm:inline">{tab.label}</span>
-                        <span className="sm:hidden">{tab.label.substring(0, 3)}</span>
-                    </button>
-                  );
-               })}
-            </div>
+        {/* BLINDAGEM DO GRID: h-24 (96px) para evitar salto */}
+        <div className="relative h-24 w-full z-[100] pointer-events-none">
+            {/* ANCORAGEM: Lógica condicional TRAVA FÍSICA de top-40 */}
+            <div className={`
+               transition-all duration-500 ease-in-out
+               ${isCompact 
+                 ? 'fixed top-8 left-1/2 -translate-x-1/2 w-auto' // REFINAMENTO DO STITCH: Top-8 e Fixed
+                 : 'sticky top-40 mt-6 mb-10 mx-auto w-full max-w-2xl px-4 flex justify-center' // TRAVA FÍSICA: Sticky top-40
+               }
+            `}>
+              {/* Elemento Morfo: A Barra que vira Bola (MECÂNICA DE MORFOSE RESTAURADA) */}
+              <div 
+                className={`
+                  pointer-events-auto relative flex items-center transition-all duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275) will-change-[width,transform,opacity,background-color]
+                  ${isCompact 
+                    ? `w-16 h-16 rounded-full p-0 shadow-2xl shadow-indigo-500/50 justify-center
+                       ${isScrolling 
+                          ? 'bg-indigo-600/10 backdrop-blur-md border border-white/20' // Fantasma apenas no scroll
+                          : 'bg-gradient-to-br from-indigo-500 to-violet-600 border border-transparent' // Sólido parado
+                       }`
+                    : 'w-full h-16 rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border border-white/70 backdrop-blur-xl justify-between'
+                  }
+                `}
+                style={{ transform: 'translate3d(0,0,0)' }} // FLUIDEZ DE HARDWARE
+              >
+                {/* CONTEÚDO 1: ABAS */}
+                <div className={`flex w-full h-full items-center justify-between transition-opacity duration-300 ${isCompact ? 'opacity-0 absolute pointer-events-none' : 'opacity-100 relative'}`}>
+                   {tabs.map((tab) => {
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => !isCompact && setActiveTab(tab.id)}
+                          className={`
+                            transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 relative cursor-pointer select-none h-full
+                            text-[10px] sm:text-xs font-black uppercase tracking-wide
+                            ${isActive 
+                              ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-xl shadow-indigo-500/30 transform scale-[1.03]' 
+                              : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'}
+                          `}
+                        >
+                            <span className="text-sm opacity-80">{tab.icon}</span>
+                            <span className="hidden sm:inline">{tab.label}</span>
+                            <span className="sm:hidden">{tab.label.substring(0, 3)}</span>
+                        </button>
+                      );
+                   })}
+                </div>
 
-            {/* CONTEÚDO 2: STITCH */}
-            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isCompact ? 'opacity-100 scale-125' : 'opacity-0 scale-50 pointer-events-none'}`}>
-               <img 
-                 src={stitchImageUrl} 
-                 alt="Stitch" 
-                 className="w-[85%] h-[85%] object-contain drop-shadow-md filter saturate-110 opacity-100 transform"
-               />
-               {/* Botão invisível para scroll top */}
-               <button 
-                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                 className="absolute inset-0 w-full h-full cursor-pointer z-10"
-                 aria-label="Voltar ao topo"
-               />
+                {/* CONTEÚDO 2: STITCH */}
+                <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isCompact ? 'opacity-100 scale-125' : 'opacity-0 scale-50 pointer-events-none'}`}>
+                   <img 
+                     src={stitchImageUrl} 
+                     alt="Stitch" 
+                     className="w-[85%] h-[85%] object-contain drop-shadow-md filter saturate-110 opacity-100 transform"
+                   />
+                   {/* Botão invisível para scroll top */}
+                   <button 
+                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                     className="absolute inset-0 w-full h-full cursor-pointer z-10"
+                     aria-label="Voltar ao topo"
+                   />
+                </div>
+              </div>
             </div>
-          </div>
         </div>
 
         {/* --- GRID DE RESULTADOS --- */}
