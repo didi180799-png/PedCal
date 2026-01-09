@@ -130,8 +130,8 @@ export default function App() {
       }, 150);
 
       // 2. Lógica de Morfose (Barra -> Bola)
-      // O limite de 120px define o momento da transformação
-      if (scrollY > 120) {
+      // LIMITE AJUSTADO PARA 150px
+      if (scrollY > 150) {
         setIsCompact(true);
       } else {
         setIsCompact(false);
@@ -291,11 +291,14 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Sticky -> Fixed/Compact) --- */}
-        {/* Container Wrapper: Garante o espaço e posicionamento */}
+        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Sticky <-> Fixed) --- */}
+        {/* CORREÇÃO DO TRAVAMENTO: Alternância Dinâmica de Posicionamento */}
         <div className={`
-           sticky top-4 z-[100] mx-auto w-full max-w-2xl px-4 pt-12 pb-6 flex justify-center pointer-events-none
-           ${isCompact ? 'h-auto' : 'h-auto'}
+           z-[100] transition-all duration-300 ease-in-out
+           ${isCompact 
+             ? 'fixed top-4 left-1/2 -translate-x-1/2 w-auto pointer-events-none' // FIXED MODE: Flutua e centraliza
+             : 'sticky top-4 mx-auto w-full max-w-2xl px-4 pt-12 pb-6 flex justify-center pointer-events-none' // STICKY MODE: Segue o fluxo
+           }
         `}>
           {/* Elemento Morfo: A Barra que vira Bola */}
           <div 
@@ -310,6 +313,7 @@ export default function App() {
                 : 'w-full h-16 rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border border-white/70 backdrop-blur-xl justify-between'
               }
             `}
+            style={{ transform: 'translate3d(0,0,0)' }} // FLUIDEZ DE HARDWARE: Força GPU
           >
             {/* CONTEÚDO 1: ABAS (Mostra apenas quando expandido) */}
             <div className={`flex w-full h-full items-center justify-between transition-opacity duration-300 ${isCompact ? 'opacity-0 absolute pointer-events-none' : 'opacity-100 relative'}`}>
