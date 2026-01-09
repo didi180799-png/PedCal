@@ -130,8 +130,8 @@ export default function App() {
       }, 150);
 
       // 2. Lógica de Morfose (Barra -> Bola)
-      // Ajuste para 150px para garantir que passou o header/hero
-      if (scrollY > 150) {
+      // RESTAURAÇÃO DO TIMING (Valor de Ouro): 120px
+      if (scrollY > 120) {
         setIsCompact(true);
       } else {
         setIsCompact(false);
@@ -292,22 +292,22 @@ export default function App() {
         </section>
 
         {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Sticky <-> Fixed) --- */}
-        {/* CORREÇÃO DO HIATO: Ajuste de Ancoragem e Transição Suave */}
+        {/* CORREÇÃO DA ANCORAGEM (Fim da Dança) */}
         <div className={`
-           z-[100] transition-all duration-300 ease-in-out
+           z-[100] transition-all duration-500 ease-in-out pointer-events-none
            ${isCompact 
-             ? 'fixed top-4 left-1/2 -translate-x-1/2 w-auto pointer-events-none' // FIXED MODE: Flutua
-             : 'sticky top-2 mx-auto w-full max-w-2xl px-4 py-4 flex justify-center pointer-events-none' // STICKY MODE: Pousa no hiato sem padding excessivo
+             ? 'fixed top-4 left-1/2 -translate-x-1/2 w-auto' // FIXED MODE: Flutua
+             : 'sticky top-4 pt-12 pb-6 mx-auto w-full max-w-2xl px-4 flex justify-center' // STICKY MODE: Pousa suavemente
            }
         `}>
-          {/* Elemento Morfo: A Barra que vira Bola */}
+          {/* Elemento Morfo: A Barra que vira Bola (CINEMÁTICA DO STITCH) */}
           <div 
             className={`
               pointer-events-auto relative flex items-center transition-all duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275) will-change-[width,transform,opacity,background-color]
               ${isCompact 
                 ? `w-16 h-16 rounded-full p-0 shadow-2xl shadow-indigo-500/50 justify-center
                    ${isScrolling 
-                      ? 'bg-indigo-600/10 backdrop-blur-md border border-white/20' // Fantasma no movimento
+                      ? 'bg-indigo-600/10 backdrop-blur-md border border-white/20' // Fantasma apenas no scroll
                       : 'bg-gradient-to-br from-indigo-500 to-violet-600 border border-transparent' // Sólido parado
                    }`
                 : 'w-full h-16 rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border border-white/70 backdrop-blur-xl justify-between'
@@ -315,8 +315,8 @@ export default function App() {
             `}
             style={{ transform: 'translate3d(0,0,0)' }} // FLUIDEZ DE HARDWARE
           >
-            {/* CONTEÚDO 1: ABAS (Fade-in suave ao expandir) */}
-            <div className={`flex w-full h-full items-center justify-between transition-opacity duration-300 delay-100 ${isCompact ? 'opacity-0 absolute pointer-events-none' : 'opacity-100 relative'}`}>
+            {/* CONTEÚDO 1: ABAS */}
+            <div className={`flex w-full h-full items-center justify-between transition-opacity duration-300 ${isCompact ? 'opacity-0 absolute pointer-events-none' : 'opacity-100 relative'}`}>
                {tabs.map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
@@ -339,12 +339,12 @@ export default function App() {
                })}
             </div>
 
-            {/* CONTEÚDO 2: STITCH (Fade-out suave ao expandir) */}
-            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isCompact ? 'opacity-100 delay-100 scale-100' : 'opacity-0 scale-50 pointer-events-none'}`}>
+            {/* CONTEÚDO 2: STITCH */}
+            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isCompact ? 'opacity-100 scale-125' : 'opacity-0 scale-50 pointer-events-none'}`}>
                <img 
                  src={stitchImageUrl} 
                  alt="Stitch" 
-                 className="w-[85%] h-[85%] object-contain drop-shadow-md filter saturate-110 opacity-100 transform scale-125"
+                 className="w-[85%] h-[85%] object-contain drop-shadow-md filter saturate-110 opacity-100 transform"
                />
                {/* Botão invisível para scroll top */}
                <button 
