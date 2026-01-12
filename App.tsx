@@ -26,7 +26,7 @@ const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlight
       badge: 'bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-rose-500/40',
       text: 'text-rose-950',
       border: 'border-l-rose-500',
-      dot: 'bg-blue-500' // Using blue dot for consistency in injectable style if needed, but the object says red. Actually, following previous logic.
+      dot: 'bg-blue-500'
     }
   };
   
@@ -299,15 +299,15 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Sticky <-> Fixed) --- */}
-        {/* BLINDAGEM DO GRID: h-24 (96px) para evitar salto */}
+        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Sincronia Fina) --- */}
+        {/* BLINDAGEM DO GRID: h-24 para evitar salto estructural */}
         <div className="relative h-24 w-full z-[100] pointer-events-none">
-            {/* ANCORAGEM: Lógica condicional TRAVA FÍSICA de top-40 */}
+            {/* ANCORAGEM: Sincronia de Coordenadas top-6 para transição sem pulo */}
             <div className={`
                transition-all duration-500 ease-in-out
                ${isCompact 
-                 ? 'fixed top-8 left-1/2 -translate-x-1/2 w-auto' // REFINAMENTO DO STITCH: Top-8 e Fixed
-                 : 'sticky top-40 mt-6 mb-10 mx-auto w-full max-w-2xl px-4 flex justify-center' // TRAVA FÍSICA: Sticky top-40
+                 ? 'fixed top-6 left-1/2 -translate-x-1/2 w-auto' // Modo Stitch: top-6
+                 : 'sticky top-6 mt-6 mb-10 mx-auto w-full max-w-2xl px-4 flex justify-center' // Modo Barra: top-6
                }
             `}>
               {/* Elemento Morfo: A Barra que vira Bola (MECÂNICA DE MORFOSE RESTAURADA) */}
@@ -317,13 +317,13 @@ export default function App() {
                   ${isCompact 
                     ? `w-16 h-16 rounded-full p-0 shadow-2xl shadow-indigo-500/50 justify-center
                        ${isScrolling 
-                          ? 'bg-indigo-600/10 backdrop-blur-md border border-white/20' // Fantasma apenas no scroll
-                          : 'bg-gradient-to-br from-indigo-500 to-violet-600 border border-transparent' // Sólido parado
+                          ? 'bg-indigo-600/10 backdrop-blur-md border border-white/20' 
+                          : 'bg-gradient-to-br from-indigo-500 to-violet-600 border border-transparent'
                        }`
                     : 'w-full h-16 rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border border-white/70 backdrop-blur-xl justify-between'
                   }
                 `}
-                style={{ transform: 'translate3d(0,0,0)' }} // FLUIDEZ DE HARDWARE
+                style={{ transform: 'translate3d(0,0,0)' }}
               >
                 {/* CONTEÚDO 1: ABAS */}
                 <div className={`flex w-full h-full items-center justify-between transition-opacity duration-300 ${isCompact ? 'opacity-0 absolute pointer-events-none' : 'opacity-100 relative'}`}>
