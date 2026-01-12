@@ -147,45 +147,20 @@ export default function App() {
   const calcWeight = !isNaN(numWeight) ? numWeight : 0;
   const isAdultCeiling = calcWeight > 50;
 
-  // --- LOGIC CORE (PRESERVED INVIOLABLE & UPDATED) ---
-  
-  // Amoxicilina (Safety Trap): Teto de adulto 1500mg/dia
+  // --- LOGIC CORE ---
   const amoxiDailyDose = Math.min(calcWeight * 50, 1500);
-
-  // 1. Paracetamol (Gts): 10mg/kg (1 gta/kg) | Teto: 55 gotas
   const paracetamolDrops = Math.round(Math.min(calcWeight, 55));
-
-  // 2. Dipirona (Gts): 20mg/kg (aprox 0.8 gta/kg) | Teto: 40 gotas
   const dipironaDrops = Math.round(Math.min((calcWeight * 20) / 25, 40));
-
-  // 3. Bromoprida (Gts): 1 gta/kg | Teto: 40 gotas
   const bromopridaDrops = Math.round(Math.min(calcWeight, 40));
-
-  // 4. Dramin B6 Oral (Gts): 1 gta/kg | Teto: 40 gotas
   const draminOralDrops = Math.round(Math.min(calcWeight, 40));
-
-  // 5. Ondansetrona (EV): 0.15mg/kg | Teto: 4mg (2mL)
   const ondansetronaVol = Math.min(calcWeight * 0.075, 2.00).toFixed(2);
-
-  // 6. Dexametasona (EV): 0.6mg/kg | Teto: 10mg (2.5mL)
   const dexametasonaVol = Math.min(calcWeight * 0.15, 2.50).toFixed(2);
-
-  // 7. Diazepam (IM): 0.3mg/kg | Teto: 10mg (2mL)
   const diazepamVol = Math.min(calcWeight * 0.06, 2.00).toFixed(2);
-
-  // 8. Dramin B6 DL (EV): 0.04 ml/kg | Teto: 1mL (50mg)
   const draminInjVol = Math.min(calcWeight * 0.04, 1.00).toFixed(2);
-
-  // 9. Buscopan (Oral): 1 gta/kg (Dose cautelosa) | Teto: 20 gotas
   const buscopanOralDrops = Math.min(Math.round(calcWeight), 20);
-
-  // 10. Buscopan (EV): 0.4mg/kg | Teto: 1 Ampola (1mL)
   const buscopanInjVol = Math.min(Number((calcWeight * 0.02).toFixed(2)), 1).toFixed(2);
-
-  // 11. Hidrocortisona (EV): Concentração 10mg/mL | Dose 2mg/kg | Teto 100mg (10mL)
   const hidrocortisonaMg = Math.min(calcWeight * 2, 100);
   const hidrocortisonaVol = Math.min(calcWeight * 0.2, 10.00).toFixed(1);
-
 
   // --- ARRAYS DE MEDICAMENTOS ---
   const orals = [
@@ -206,7 +181,7 @@ export default function App() {
     { label: "3. DIPIRONA (EV/IM) - (500mg/mL)", dose: `${(calcWeight * 25).toFixed(1)} mg`, volume: `${(calcWeight * 0.05).toFixed(2)} mL`, color: 'blue' },
     { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${dexametasonaVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2.5mL)" },
     { label: "5. DIAZEPAM (IM) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${diazepamVol} mL`, color: 'blue', notes: "Dose: 0,3mg/kg. Aplicar via Intramuscular profunda." },
-    { label: "6. DRAMIN B6 (DL) (EV)", dose: `${(calcWeight * 1.25).toFixed(2)} mg`, volume: `${draminInjVol} mL`, color: 'blue', notes: "Dose: 1,25mg/kg. DILUIR 1mL da ampola em 9mL de SF 0,9% e aplicar lento." },
+    { label: "6. DRAMIN B6 (DL) (EV)", dose: `${(calcWeight * 1.25).toFixed(2)} mg`, volume: `${draminInjVol} mL`, color: 'blue', notes: "Dose: 1,25mg/kg. DILUIIR 1mL da ampola em 9mL de SF 0,9% e aplicar lento." },
     { label: "Buscopan Simples (EV/IM) (20mg/mL)", dose: `${(calcWeight * 0.4).toFixed(1)} mg`, volume: `${buscopanInjVol} mL`, color: 'blue', notes: "Dose: 0,4mg/kg. Teto: 1 ampola." },
     { label: "7. HIDROCORTISONA (EV) - 100mg", dose: `${Math.min(calcWeight * 2, 100)} mg`, volume: `${hidrocortisonaVol} mL`, color: 'blue', notes: "DILUIÇÃO PADRÃO: 100mg + 10mL de ABD (10mg/mL). Dose: 2mg/kg. Teto: 100mg (10mL)." }
   ];
@@ -299,15 +274,15 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Sincronia Fina) --- */}
-        {/* BLINDAGEM DO GRID: h-24 para evitar salto estructural */}
-        <div className="relative h-24 w-full z-[100] pointer-events-none">
-            {/* ANCORAGEM: Sincronia de Coordenadas top-6 para transição sem pulo */}
+        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Correção de Desvio Lateral) --- */}
+        {/* BLINDAGEM DO GRID: h-24 e pt-6 para manter estabilidade vertical */}
+        <div className="relative h-24 w-full z-[100] pointer-events-none pt-6">
+            {/* ANCORAGEM: Lógica de centralização unificada com left-1/2 -translate-x-1/2 */}
             <div className={`
                transition-all duration-500 ease-in-out
                ${isCompact 
-                 ? 'fixed top-6 left-1/2 -translate-x-1/2 w-auto' // Modo Stitch: top-6
-                 : 'sticky top-6 mt-6 mb-10 mx-auto w-full max-w-2xl px-4 flex justify-center' // Modo Barra: top-6
+                 ? 'fixed top-6 left-1/2 -translate-x-1/2 w-auto' // Modo Stitch
+                 : 'sticky top-6 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4' // Modo Barra
                }
             `}>
               {/* Elemento Morfo: A Barra que vira Bola (MECÂNICA DE MORFOSE RESTAURADA) */}
