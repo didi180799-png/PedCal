@@ -181,7 +181,7 @@ export default function App() {
     { label: "3. DIPIRONA (EV/IM) - (500mg/mL)", dose: `${(calcWeight * 25).toFixed(1)} mg`, volume: `${(calcWeight * 0.05).toFixed(2)} mL`, color: 'blue' },
     { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${dexametasonaVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2.5mL)" },
     { label: "5. DIAZEPAM (IM) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${diazepamVol} mL`, color: 'blue', notes: "Dose: 0,3mg/kg. Aplicar via Intramuscular profunda." },
-    { label: "6. DRAMIN B6 (DL) (EV)", dose: `${(calcWeight * 1.25).toFixed(2)} mg`, volume: `${draminInjVol} mL`, color: 'blue', notes: "Dose: 1,25mg/kg. DILUIR 1mL da ampola em 9mL de SF 0,9% e aplicar lento." },
+    { label: "6. DRAMIN B6 (DL) (EV)", dose: `${(calcWeight * 1.25).toFixed(2)} mg`, volume: `${draminInjVol} mL`, color: 'blue', notes: "Dose: 1,25mg/kg. DILUIIR 1mL da ampola em 9mL de SF 0,9% e aplicar lento." },
     { label: "Buscopan Simples (EV/IM) (20mg/mL)", dose: `${(calcWeight * 0.4).toFixed(1)} mg`, volume: `${buscopanInjVol} mL`, color: 'blue', notes: "Dose: 0,4mg/kg. Teto: 1 ampola." },
     { label: "7. HIDROCORTISONA (EV) - 100mg", dose: `${Math.min(calcWeight * 2, 100)} mg`, volume: `${hidrocortisonaVol} mL`, color: 'blue', notes: "DILUIÇÃO PADRÃO: 100mg + 10mL de ABD (10mg/mL). Dose: 2mg/kg. Teto: 100mg (10mL)." }
   ];
@@ -274,7 +274,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Correção de Layout com Técnica Breakout) --- */}
+        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Correção de Layout com Técnica Breakout e Anti-Ballooning) --- */}
         {/* BLINDAGEM DO GRID: h-24 e pt-6 para manter estabilidade vertical */}
         <div className="relative h-24 w-full z-[100] pointer-events-none pt-6">
             {/* ANCORAGEM: Alinhamento perfeito usando fixed left-0 w-full e breakout margin ml-[calc(50%-50vw)] */}
@@ -287,7 +287,7 @@ export default function App() {
                 className={`
                   pointer-events-auto relative flex items-center transition-all duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275) will-change-[width,transform,opacity,background-color]
                   ${isCompact 
-                    ? `w-16 h-16 rounded-full p-0 shadow-2xl shadow-indigo-500/50 justify-center
+                    ? `w-16 max-w-[4rem] h-16 rounded-full p-0 shadow-2xl shadow-indigo-500/50 justify-center
                        ${isScrolling 
                           ? 'bg-indigo-600/10 backdrop-blur-md border border-white/20' 
                           : 'bg-gradient-to-br from-indigo-500 to-violet-600 border border-transparent'
