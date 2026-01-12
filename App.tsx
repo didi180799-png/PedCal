@@ -26,7 +26,7 @@ const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlight
       badge: 'bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-rose-500/40',
       text: 'text-rose-950',
       border: 'border-l-rose-500',
-      dot: 'bg-rose-500'
+      dot: 'bg-blue-500' // Using blue dot for consistency in injectable style if needed, but the object says red. Actually, following previous logic.
     }
   };
   
@@ -58,7 +58,7 @@ const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlight
         <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-relaxed user-select-none">
           {label}
         </h3>
-        <div className={`w-2 h-2 rounded-full ${t.dot} shadow-[0_0_8px_currentColor] opacity-60`}></div>
+        <div className={`w-2 h-2 rounded-full ${t.dot || 'bg-slate-400'} shadow-[0_0_8px_currentColor] opacity-60`}></div>
       </div>
       
       {/* Corpo Principal */}
@@ -87,7 +87,7 @@ const MedicationCard = ({ label, dose, practicalResult, volume, notes, highlight
         {/* Rodapé com Detalhes */}
         <div className="mt-5 pt-4 border-t border-slate-200/50 flex flex-col sm:flex-row sm:items-center gap-3">
            <div className="flex items-center gap-2 px-2 py-1 bg-slate-100/50 rounded-md self-start sm:self-auto ring-1 ring-slate-200/50 user-select-none">
-             <div className={`w-1 h-3 rounded-full ${t.dot} opacity-40`}></div>
+             <div className={`w-1 h-3 rounded-full ${t.dot || 'bg-slate-400'} opacity-40`}></div>
              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">
                Dose: {dose}
              </span>
@@ -147,8 +147,11 @@ export default function App() {
   const calcWeight = !isNaN(numWeight) ? numWeight : 0;
   const isAdultCeiling = calcWeight > 50;
 
-  // --- LOGIC CORE (PRESERVED INVIOLABLE) ---
+  // --- LOGIC CORE (PRESERVED INVIOLABLE & UPDATED) ---
   
+  // Amoxicilina (Safety Trap): Teto de adulto 1500mg/dia
+  const amoxiDailyDose = Math.min(calcWeight * 50, 1500);
+
   // 1. Paracetamol (Gts): 10mg/kg (1 gta/kg) | Teto: 55 gotas
   const paracetamolDrops = Math.round(Math.min(calcWeight, 55));
 
@@ -179,6 +182,10 @@ export default function App() {
   // 10. Buscopan (EV): 0.4mg/kg | Teto: 1 Ampola (1mL)
   const buscopanInjVol = Math.min(Number((calcWeight * 0.02).toFixed(2)), 1).toFixed(2);
 
+  // 11. Hidrocortisona (EV): Concentração 10mg/mL | Dose 2mg/kg | Teto 100mg (10mL)
+  const hidrocortisonaMg = Math.min(calcWeight * 2, 100);
+  const hidrocortisonaVol = Math.min(calcWeight * 0.2, 10.00).toFixed(1);
+
 
   // --- ARRAYS DE MEDICAMENTOS ---
   const orals = [
@@ -186,11 +193,11 @@ export default function App() {
     { label: "Paracetamol (Gts 200mg/mL)", dose: `${(calcWeight * 10).toFixed(1)}mg`, practicalResult: `${paracetamolDrops} Gotas`, color: 'emerald', notes: "Teto máx: 55 gotas" },
     { label: "Bromoprida (Gts 4mg/mL)", dose: `${(calcWeight * 0.15).toFixed(2)}mg`, practicalResult: `${bromopridaDrops} Gotas`, color: 'emerald', notes: "Dose: 0,15mg/kg/dose (1 gota/kg). Máximo 40 gotas." },
     { label: "Dramin B6 (Gts)", dose: `${(calcWeight * 1.25).toFixed(2)}mg`, practicalResult: `${draminOralDrops} Gotas`, color: 'emerald', notes: "Dose: 1,25mg/kg (1 gta/kg). Administrar a cada 6h ou 8h." },
-    { label: "Amoxicilina (250mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 50 / 3).toFixed(1)} mL (8/8h)`, color: 'emerald' },
-    { label: "Amoxicilina (400mg/5mL)", dose: `${(calcWeight * 50).toFixed(1)}mg/dia`, practicalResult: `${((calcWeight * 50) / 80 / 2).toFixed(1)} mL (12/12h)`, color: 'emerald' },
+    { label: "Amoxicilina (250mg/5mL)", dose: `${amoxiDailyDose.toFixed(1)}mg/dia`, practicalResult: `${(amoxiDailyDose / 50 / 3).toFixed(1)} mL (8/8h)`, color: 'emerald', notes: "Teto máx: 1500mg/dia." },
+    { label: "Amoxicilina (400mg/5mL)", dose: `${amoxiDailyDose.toFixed(1)}mg/dia`, practicalResult: `${(amoxiDailyDose / 80 / 2).toFixed(1)} mL (12/12h)`, color: 'emerald', notes: "Teto máx: 1500mg/dia." },
     { label: "Prednisolona (3mg/mL)", dose: `${(calcWeight * 1).toFixed(1)}mg`, practicalResult: `${(calcWeight / 3).toFixed(1)} mL`, color: 'emerald' },
     { label: "Buscopan Simples (Gts 10mg/mL)", dose: `${(calcWeight * 0.5).toFixed(1)} mg`, practicalResult: `${buscopanOralDrops} Gotas`, color: 'emerald', notes: "Dose: 0,3-0,5mg/kg. Máximo 20 gts." },
-    { label: "Ondansetrona (VO) - Diluído 1mg/1mL", dose: `${(calcWeight * 0.15).toFixed(2)}mg`, practicalResult: `${Math.min(Number((calcWeight * 0.15).toFixed(1)), 4)} mL`, color: 'emerald', notes: "Diluir 1cp (4mg) em 4mL de água e aspirar o volume acima." }
+    { label: "Ondansetrona (VO) - Diluído 1mg/1mL", dose: `${(calcWeight * 0.15).toFixed(2)}mg`, practicalResult: `${Math.min(Number((calcWeight * 0.15).toFixed(1)), 4)} mL`, color: 'emerald', notes: "Diluir 1cp (4mg) em 4mL de água e aspirar o volume acima. Teto: 4mg." }
   ];
 
   const injectables = [
@@ -200,7 +207,8 @@ export default function App() {
     { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${dexametasonaVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2.5mL)" },
     { label: "5. DIAZEPAM (IM) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${diazepamVol} mL`, color: 'blue', notes: "Dose: 0,3mg/kg. Aplicar via Intramuscular profunda." },
     { label: "6. DRAMIN B6 (DL) (EV)", dose: `${(calcWeight * 1.25).toFixed(2)} mg`, volume: `${draminInjVol} mL`, color: 'blue', notes: "Dose: 1,25mg/kg. DILUIR 1mL da ampola em 9mL de SF 0,9% e aplicar lento." },
-    { label: "Buscopan Simples (EV/IM) (20mg/mL)", dose: `${(calcWeight * 0.4).toFixed(1)} mg`, volume: `${buscopanInjVol} mL`, color: 'blue', notes: "Dose: 0,4mg/kg. Teto: 1 ampola." }
+    { label: "Buscopan Simples (EV/IM) (20mg/mL)", dose: `${(calcWeight * 0.4).toFixed(1)} mg`, volume: `${buscopanInjVol} mL`, color: 'blue', notes: "Dose: 0,4mg/kg. Teto: 1 ampola." },
+    { label: "7. HIDROCORTISONA (EV) - 100mg", dose: `${Math.min(calcWeight * 2, 100)} mg`, volume: `${hidrocortisonaVol} mL`, color: 'blue', notes: "DILUIÇÃO PADRÃO: 100mg + 10mL de ABD (10mg/mL). Dose: 2mg/kg. Teto: 100mg (10mL)." }
   ];
 
   const intubation = [
