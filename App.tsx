@@ -181,7 +181,7 @@ export default function App() {
     { label: "3. DIPIRONA (EV/IM) - (500mg/mL)", dose: `${(calcWeight * 25).toFixed(1)} mg`, volume: `${(calcWeight * 0.05).toFixed(2)} mL`, color: 'blue' },
     { label: "4. DEXAMETASONA (EV/IM) - (4mg/mL)", dose: `${(calcWeight * 0.6).toFixed(2)} mg`, volume: `${dexametasonaVol} mL`, color: 'blue', notes: "Teto máx: 10mg (2.5mL)" },
     { label: "5. DIAZEPAM (IM) - (10mg/2mL)", dose: `${(calcWeight * 0.3).toFixed(2)} mg`, volume: `${diazepamVol} mL`, color: 'blue', notes: "Dose: 0,3mg/kg. Aplicar via Intramuscular profunda." },
-    { label: "6. DRAMIN B6 (DL) (EV)", dose: `${(calcWeight * 1.25).toFixed(2)} mg`, volume: `${draminInjVol} mL`, color: 'blue', notes: "Dose: 1,25mg/kg. DILUIIR 1mL da ampola em 9mL de SF 0,9% e aplicar lento." },
+    { label: "6. DRAMIN B6 (DL) (EV)", dose: `${(calcWeight * 1.25).toFixed(2)} mg`, volume: `${draminInjVol} mL`, color: 'blue', notes: "Dose: 1,25mg/kg. DILUIR 1mL da ampola em 9mL de SF 0,9% e aplicar lento." },
     { label: "Buscopan Simples (EV/IM) (20mg/mL)", dose: `${(calcWeight * 0.4).toFixed(1)} mg`, volume: `${buscopanInjVol} mL`, color: 'blue', notes: "Dose: 0,4mg/kg. Teto: 1 ampola." },
     { label: "7. HIDROCORTISONA (EV) - 100mg", dose: `${Math.min(calcWeight * 2, 100)} mg`, volume: `${hidrocortisonaVol} mL`, color: 'blue', notes: "DILUIÇÃO PADRÃO: 100mg + 10mL de ABD (10mg/mL). Dose: 2mg/kg. Teto: 100mg (10mL)." }
   ];
@@ -274,16 +274,13 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Correção de Desvio Lateral) --- */}
+        {/* --- NAVEGAÇÃO UNIFICADA COM MORFOSE (Correção de Layout com Técnica Breakout) --- */}
         {/* BLINDAGEM DO GRID: h-24 e pt-6 para manter estabilidade vertical */}
         <div className="relative h-24 w-full z-[100] pointer-events-none pt-6">
-            {/* ANCORAGEM: Lógica de centralização unificada com left-1/2 -translate-x-1/2 */}
+            {/* ANCORAGEM: Alinhamento perfeito usando fixed left-0 w-full e breakout margin ml-[calc(50%-50vw)] */}
             <div className={`
-               transition-all duration-500 ease-in-out
-               ${isCompact 
-                 ? 'fixed top-6 left-1/2 -translate-x-1/2 w-auto' // Modo Stitch
-                 : 'sticky top-6 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4' // Modo Barra
-               }
+               transition-all duration-500 ease-in-out flex justify-center
+               ${isCompact ? 'fixed top-6 left-0 w-full' : 'sticky top-6 w-screen ml-[calc(50%-50vw)]'}
             `}>
               {/* Elemento Morfo: A Barra que vira Bola (MECÂNICA DE MORFOSE RESTAURADA) */}
               <div 
@@ -295,7 +292,7 @@ export default function App() {
                           ? 'bg-indigo-600/10 backdrop-blur-md border border-white/20' 
                           : 'bg-gradient-to-br from-indigo-500 to-violet-600 border border-transparent'
                        }`
-                    : 'w-full h-16 rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border border-white/70 backdrop-blur-xl justify-between'
+                    : 'w-full max-w-2xl px-4 h-16 rounded-full bg-white/85 p-1.5 gap-2 shadow-lg hover:shadow-xl border border-white/70 backdrop-blur-xl justify-between'
                   }
                 `}
                 style={{ transform: 'translate3d(0,0,0)' }}
